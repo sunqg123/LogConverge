@@ -1,0 +1,52 @@
+# 3lib 仅存放按 RID 归档的 Release 动态库。
+set(LOGCONVERGE_NATIVE_ROOT "${PROJECT_SOURCE_DIR}/../dotnet/LogConverge.Sharp/3lib" CACHE PATH "Native library output root")
+if(WIN32)
+  set(logconverge_platform win)
+elseif(APPLE)
+  set(logconverge_platform osx)
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+  set(logconverge_platform linux)
+else()
+  set(logconverge_platform "${CMAKE_SYSTEM_NAME}")
+endif()
+
+if(MSVC)
+  set(logconverge_processor "${CMAKE_CXX_COMPILER_ARCHITECTURE_ID}")
+elseif(APPLE AND CMAKE_OSX_ARCHITECTURES)
+  set(logconverge_processor "${CMAKE_OSX_ARCHITECTURES}")
+else()
+  set(logconverge_processor "${CMAKE_SYSTEM_PROCESSOR}")
+endif()
+string(TOLOWER "${logconverge_processor}" logconverge_processor)
+if(logconverge_processor MATCHES ";")
+  set(logconverge_arch universal)
+elseif(logconverge_processor MATCHES "^(amd64|x86_64|x64)$")
+  set(logconverge_arch x64)
+elseif(logconverge_processor MATCHES "^(aarch64|arm64|arm64ec)$")
+  set(logconverge_arch "${logconverge_processor}")
+  if(logconverge_arch STREQUAL "aarch64")
+    set(logconverge_arch arm64)
+  endif()
+elseif(logconverge_processor MATCHES "^(i[3-6]86|x86)$")
+  set(logconverge_arch x86)
+else()
+  set(logconverge_arch "${logconverge_processor}")
+endif()
+
+# musl 等工具链可明确指定 RID，避免与 glibc 库混放。
+set(LOGCONVERGE_RUNTIME_ID "" CACHE STRING "Native runtime identifier override")
+if(LOGCONVERGE_RUNTIME_ID)
+  set(logconverge_rid "${LOGCONVERGE_RUNTIME_ID}")
+elseif(APPLE AND logconverge_arch STREQUAL "universal")
+  set(logconverge_rid osx)
+else()
+  set(logconverge_rid "${logconverge_platform}-${logconverge_arch}")
+endif()
+
+# 其他配置留在构建目录，不覆盖用于打包的 Release 库。
+set(logconverge_local_output "${PROJECT_BINARY_DIR}/bin/$<IF:$<BOOL:$<CONFIG>>,$<CONFIG>,NoConfig>")
+set(logconverge_output "$<IF:$<CONFIG:Release>,${LOGCONVERGE_NATIVE_ROOT}/${logconverge_rid},${logconverge_local_output}>")
+set_target_properties(LogConverge_LogConverge PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${logconverge_output}"
+    LIBRARY_OUTPUT_DIRECTORY "${logconverge_output}"
+    PDB_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/symbols/$<CONFIG>")

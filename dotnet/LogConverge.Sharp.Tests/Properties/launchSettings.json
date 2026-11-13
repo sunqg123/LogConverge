@@ -1,0 +1,7 @@
+{
+  "profiles": {
+    "LogConverge.Sharp.Tests": {
+      "commandName": "Project"
+    }
+  }
+}

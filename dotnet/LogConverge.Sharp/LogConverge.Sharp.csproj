@@ -1,0 +1,61 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.1;net10.0</TargetFrameworks>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <!-- 封装库不生成调试符号文件。 -->
+    <DebugType>none</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+    <Version>0.7.0</Version>
+    <PackageId>LogConverge.Sharp</PackageId>
+    <Authors>LogConverge</Authors>
+    <Description>基于原生 spdlog 内核的静态日志 SDK；当前支持 Windows x64。</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageTags>logging;log;spdlog;native;cpp;csharp;cross-platform</PackageTags>
+    <Copyright>Copyright (c) 2026 LogConverge contributors</Copyright>
+    <PackageReleaseNotes>支持自动退出排空、UTF-8 日志、WriteLazy 和原生按天/大小滚动；修复 C++20 兼容与历史清理容错。</PackageReleaseNotes>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageOutputPath>../../artifacts/packages</PackageOutputPath>
+    <NativeLibraryPath Condition="'$(NativeLibraryPath)' == ''">$(MSBuildThisFileDirectory)3lib/win-x64/LogConverge.dll</NativeLibraryPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Remove="3lib/**/*;$(NativeLibraryPath)" />
+    <EmbeddedResource Include="$(NativeLibraryPath)" Condition="Exists('$(NativeLibraryPath)')"
+                      LogicalName="LogConverge.Native.win-x64.LogConverge.dll" />
+    <EmbeddedResource Include="3lib/**/LogConverge.dll;3lib/**/libLogConverge.so;3lib/**/libLogConverge.dylib"
+                      Exclude="3lib/win-x64/LogConverge.dll">
+      <LogicalName>LogConverge.Native.$([System.String]::Copy('%(RecursiveDir)').Replace('\', '.').Replace('/', '.'))%(Filename)%(Extension)</LogicalName>
+    </EmbeddedResource>
+    <None Remove="README.md" />
+    <None Include="README.md" Pack="true" PackagePath="" />
+    <None Include="../../native/THIRD_PARTY_NOTICES.md" Pack="true" PackagePath="/" />
+    <None Include="../../native/licenses/*" Pack="true" PackagePath="licenses/" />
+    <None Include="../../LICENSE" Pack="true" PackagePath="/" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="3lib\win-x64\" />
+    <Folder Include="3lib\win-arm64\" />
+    <Folder Include="3lib\linux-x64\" />
+    <Folder Include="3lib\linux-arm64\" />
+    <Folder Include="3lib\osx-x64\" />
+    <Folder Include="3lib\osx-arm64\" />
+  </ItemGroup>
+  <Target Name="CheckNativeLibrary" BeforeTargets="GenerateNuspec">
+    <ItemGroup>
+      <_EmbeddedNativeLibrary Include="@(EmbeddedResource)"
+          Condition="$([System.String]::Copy('%(EmbeddedResource.LogicalName)').StartsWith('LogConverge.Native.'))" />
+    </ItemGroup>
+    <Error Condition="'@(_EmbeddedNativeLibrary)' == ''" Text="请先在 3lib/对应RID 下生成原生库，再打包。" />
+  </Target>
+  <!-- 尚无仓库地址时，不生成空的 repository 元素。 -->
+  <Target Name="NormalizeRepositoryMetadata" BeforeTargets="GenerateNuspec" DependsOnTargets="InitializeSourceControlInformation">
+    <PropertyGroup Condition="'$(RepositoryUrl)' == ''">
+      <RepositoryType />
+      <RepositoryCommit />
+      <RepositoryBranch />
+    </PropertyGroup>
+  </Target>
+</Project>
