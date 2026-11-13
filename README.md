@@ -55,5 +55,5 @@ dotnet add path\to\YourApp.csproj package LogConverge.Sharp --version 0.7.0 --so
 
 ## 许可证
 
-SDK 使用 [MIT 许可证](LICENSE)。包内包含许可证、标签和更新说明；仓库及项目地址按当前计划留待上传后补充。
+SDK 使用 [MIT 许可证](LICENSE)。包内包含许可证、标签和更新说明；NuGet 仓库和项目链接指向 [GitHub 仓库](https://github.com/sunqg123/LogConverge)。
 第三方原始许可证随包提供，见 [第三方声明](native/THIRD_PARTY_NOTICES.md)。

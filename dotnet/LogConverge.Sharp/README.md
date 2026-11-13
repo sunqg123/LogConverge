@@ -2,6 +2,8 @@
 
 C# 静态日志入口，原生 spdlog 内核负责异步文件输出。目前随包分发 Windows x64 动态库。
 
+项目源码：[GitHub · LogConverge](https://github.com/sunqg123/LogConverge)。
+
 ```csharp
 using LogConverge.Sharp;
 

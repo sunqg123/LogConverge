@@ -11,6 +11,9 @@
     <DebugSymbols>false</DebugSymbols>
     <Version>0.7.0</Version>
     <PackageId>LogConverge.Sharp</PackageId>
+    <RepositoryUrl>https://github.com/sunqg123/LogConverge</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageProjectUrl>https://github.com/sunqg123/LogConverge</PackageProjectUrl>
     <Authors>LogConverge</Authors>
     <Description>基于原生 spdlog 内核的静态日志 SDK；当前支持 Windows x64。</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -49,13 +52,5 @@
           Condition="$([System.String]::Copy('%(EmbeddedResource.LogicalName)').StartsWith('LogConverge.Native.'))" />
     </ItemGroup>
     <Error Condition="'@(_EmbeddedNativeLibrary)' == ''" Text="请先在 3lib/对应RID 下生成原生库，再打包。" />
-  </Target>
-  <!-- 尚无仓库地址时，不生成空的 repository 元素。 -->
-  <Target Name="NormalizeRepositoryMetadata" BeforeTargets="GenerateNuspec" DependsOnTargets="InitializeSourceControlInformation">
-    <PropertyGroup Condition="'$(RepositoryUrl)' == ''">
-      <RepositoryType />
-      <RepositoryCommit />
-      <RepositoryBranch />
-    </PropertyGroup>
   </Target>
 </Project>
