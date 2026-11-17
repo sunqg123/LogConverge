@@ -75,7 +75,7 @@ internal static unsafe class NativeMethods
         internal Text Exception;
     }
     /// <summary>
-    /// 创建原生实例，返回句柄由 Log 管理。
+    /// 创建原生实例，返回句柄由对应的日志实例管理。
     /// </summary>
     internal static LogResult Initialize(ref Options options, ref IntPtr handle) => Api.Value.Initialize(ref options, ref handle);
 
@@ -90,7 +90,7 @@ internal static unsafe class NativeMethods
     internal static LogResult Destroy(ref IntPtr handle, uint timeout) => Api.Value.Destroy(ref handle, timeout);
 
     /// <summary>
-    /// 进程退出且实例已释放后，卸载模块并清理私有缓存。
+    /// 进程退出且所有实例已释放后，卸载模块并清理私有缓存。
     /// </summary>
     internal static void ReleaseLibrary()
     {

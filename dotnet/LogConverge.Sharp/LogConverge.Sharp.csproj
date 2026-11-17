@@ -9,17 +9,17 @@
     <!-- 封装库不生成调试符号文件。 -->
     <DebugType>none</DebugType>
     <DebugSymbols>false</DebugSymbols>
-    <Version>0.7.0</Version>
+    <Version>0.7.1</Version>
     <PackageId>LogConverge.Sharp</PackageId>
     <RepositoryUrl>https://github.com/sunqg123/LogConverge</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageProjectUrl>https://github.com/sunqg123/LogConverge</PackageProjectUrl>
     <Authors>LogConverge</Authors>
-    <Description>基于原生 spdlog 内核的静态日志 SDK；当前支持 Windows x64。</Description>
+    <Description>基于原生 spdlog 内核的日志 SDK，支持静态入口与独立实例。当前支持 Windows x64。</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageTags>logging;log;spdlog;native;cpp;csharp;cross-platform</PackageTags>
     <Copyright>Copyright (c) 2026 LogConverge contributors</Copyright>
-    <PackageReleaseNotes>支持自动退出排空、UTF-8 日志、WriteLazy 和原生按天/大小滚动；修复 C++20 兼容与历史清理容错。</PackageReleaseNotes>
+    <PackageReleaseNotes>增加独立日志实例，各实例拥有自己的开关、目录和生命周期，保留现有静态 Log 接口。</PackageReleaseNotes>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageOutputPath>../../artifacts/packages</PackageOutputPath>
     <NativeLibraryPath Condition="'$(NativeLibraryPath)' == ''">$(MSBuildThisFileDirectory)3lib/win-x64/LogConverge.dll</NativeLibraryPath>

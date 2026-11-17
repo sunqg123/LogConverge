@@ -1,6 +1,6 @@
 # LogConverge
 
-C++ / spdlog 日志内核，配套 C# 静态封装与本地 NuGet 包。当前验证 Windows x64 + .NET 10。
+C++ / spdlog 日志内核，配套 C# 静态入口、独立日志实例与 NuGet 包。当前验证 Windows x64 + .NET 10。
 
 ## C# 使用
 
@@ -28,11 +28,13 @@ if (result == LogResult.Ok)
 各方法返回 LogResult；初始化失败、满载丢弃和 I/O 故障可通过返回值观察，不向业务抛出日志异常。
 Write 的 null 消息按空文本写入；延迟消息使用 WriteLazy，关闭时不执行消息工厂。
 
-本地包：`artifacts/packages/LogConverge.Sharp.0.7.0.nupkg`。
+同一进程里的类库可以创建并持有自己的 `LogInstance`，使用实例的 `Initialize` 和 `Info` 等方法。每个实例单独设置开关、目录和生命周期。给各实例分配不同目录，避免同时滚动同一个文件。
+
+本地包：`artifacts/packages/LogConverge.Sharp.0.7.1.nupkg`。
 从仓库根目录执行下面命令，将 `path\to\YourApp.csproj` 替换为业务项目路径：
 
 ```cmd
-dotnet add path\to\YourApp.csproj package LogConverge.Sharp --version 0.7.0 --source .\artifacts\packages
+dotnet add path\to\YourApp.csproj package LogConverge.Sharp --version 0.7.1 --source .\artifacts\packages
 ```
 
 托管程序集为 AnyCPU，目标为 netstandard2.1、net10.0；原生库作为资源嵌入 LogConverge.Sharp.dll。

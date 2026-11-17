@@ -31,9 +31,7 @@ internal static class NativeLibraryLoader
     /// </summary>
     private static string GetRuntimeId()
     {
-        string platform = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "win"
-            : RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "linux"
-            : RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ? "osx" : "";
+        string platform = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "win" : RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "linux" : RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ? "osx" : "";
         string architecture = RuntimeInformation.ProcessArchitecture switch
         {
             Architecture.X64 => "x64",

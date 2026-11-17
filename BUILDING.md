@@ -123,7 +123,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts\pack.ps1
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts\verify-package.ps1
 ```
 
-pack 脚本生成 artifacts/packages/LogConverge.Sharp.0.7.0.nupkg，包含已嵌入原生资源的 AnyCPU 托管程序集、XML 文档和第三方声明/许可证。
+pack 脚本生成 artifacts/packages/LogConverge.Sharp.0.7.1.nupkg，包含已嵌入原生资源的 AnyCPU 托管程序集、XML 文档和第三方声明/许可证。
 构建封装使用 .NET 10 SDK，同时生成 netstandard2.1 和 net10.0 两个目标。原生库固定 Release，托管消费者无需 C++ 编译器或源码。
 打包读取 C# 类库项目内的 3lib/<RID>/ 动态库并嵌入程序集，不再包含 runtimes 原生资产或 buildTransitive 配置。当前 3lib/win-x64 已有匹配的 Release DLL 时可使用 pack.ps1 -SkipNativeBuild。打包不会自动发布到公共源。
 

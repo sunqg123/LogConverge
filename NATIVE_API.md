@@ -99,11 +99,12 @@ Windows x64 Debug/Release、C# 公开入口及本地 NuGet 消费者的 build/ru
 ## C# 封装与发布
 
 命名空间为 LogConverge.Sharp，静态入口 Log 提供 Initialize、Trace、Debug、Info、Warning、Error、Critical、Write、Destroy。
+LogInstance 提供相同的实例方法。各实例独立保存开关、目录和原生句柄，静态 Log 使用默认实例。每个启用的实例应使用独占目录。
 Error/Critical 接受 Exception；Write 的 null 消息视为空文本。延迟消息使用独立的 WriteLazy(level, category, factory)，关闭时不调用消息工厂，避免 null 与字符串重载混淆。原先使用 Write(..., () => message) 的代码需改为 WriteLazy(..., () => message)。
 所有调用返回 LogResult，日志失败不抛给业务；必须检查 Initialize 结果才能确认启用成功，写入满载返回 Dropped。
 C# 相对路径以 AppContext.BaseDirectory 为基准；原生 ABI 仍要求宿主提供绝对目录。
 传 false 时封装不调用原生初始化，因此关闭场景不依赖原生 DLL 加载；重复 Initialize 仍返回 AlreadyInitialized，Destroy 后可以重新初始化。
-静态入口由封装管理生命周期，业务初始化后直接调用写入方法。初始化阶段仅注册一次 ProcessExit 处理，正常退出自动停止接收、排空并释放，总等待上限为 3 秒，包含生命周期锁、在途调用和原生排空。退出开始后不允许重新初始化。
+初始化阶段仅注册一次 ProcessExit 处理。正常退出时停止接收并排空所有已登记的实例，它们共享 3 秒等待预算，包含生命周期锁、在途调用和原生排空。退出开始后不允许重新初始化。
 Destroy 是可选的提前释放入口，仍支持手动释放后重新初始化，超时保留实例可重试。托管封装保护在途调用，销毁开始后新写入返回 Closed，完成后返回 Filtered。
 退出处理不抛出异常；强制结束、崩溃、断电或超时无法保证剩余日志完整写入。没有可变 IsEnabled 或 MinimumLevel 属性。
 托管程序集 AnyCPU 便于复用，但启用时检查操作系统和进程架构；当前只有 Windows x64 原生库，其他组合返回 UnsupportedPlatform。

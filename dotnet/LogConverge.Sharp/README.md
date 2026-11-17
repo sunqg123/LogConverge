@@ -1,6 +1,6 @@
 # LogConverge.Sharp
 
-C# 静态日志入口，原生 spdlog 内核负责异步文件输出。目前随包分发 Windows x64 动态库。
+C# 日志 SDK，提供静态入口与独立实例。原生 spdlog 内核负责异步文件输出。目前随包分发 Windows x64 动态库。
 
 项目源码：[GitHub · LogConverge](https://github.com/sunqg123/LogConverge)。
 
@@ -18,10 +18,22 @@ if (result == LogResult.Ok)
 ```
 
 Debug/发布版本是否记录由宿主传入的 bool 决定，SDK 不根据自身构建模式推断。
+
+同一进程内的类库或组件可以持有自己的 `LogInstance`。
+
+```csharp
+var playbackLog = new LogInstance();
+if (playbackLog.Initialize(Path.Combine("Logs", "Playback"), enabled: true) == LogResult.Ok)
+{
+    playbackLog.Info("Playback", "播放组件已启动");
+}
+```
+
+各实例拥有自己的开关、目录和原生句柄。静态 `Log` 使用应用的默认实例。每个启用的实例应使用独占目录。组件提前卸载时可调用自己的 `Destroy()`，进程正常退出时 SDK 会统一清理仍在使用的实例。
 未初始化或传 false 时不编码消息、不调用原生库、不创建目录或线程。
 相对目录以 AppContext.BaseDirectory 为基准；也可传 D:/Logs 等绝对目录。
 文件追加到 yyyyMMdd.txt，后台默认每秒刷新；正常退出时自动排空并释放，业务代码只需初始化和写日志。
-退出处理只注册一次，总等待上限为 3 秒；强制结束、崩溃或断电无法保证执行退出回调。
+退出处理只注册一次，所有实例共享 3 秒等待预算。强制结束、崩溃或断电无法保证执行退出回调。
 
 Trace、Debug、Info、Warning、Error、Critical 和 Write 均返回 LogResult；日志故障不向业务抛异常。
 Error/Critical 接受 Exception 并转换完整异常详情。Write 的 null 消息视为空文本；WriteLazy 接受 Func<string> 延迟构造，关闭时不执行消息工厂。
